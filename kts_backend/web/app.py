@@ -5,14 +5,10 @@ from aiohttp.web import (
     Request as AiohttpRequest,
     View as AiohttpView,
 )
-#from aiohttp_apispec import setup_aiohttp_apispec
-#from aiohttp_session import setup as session_setup
-#from aiohttp_session.cookie_storage import EncryptedCookieStorage
 
-#from kts_backend.admin.models import AdminModel
 from kts_backend.store import Store, setup_store
 #from kts_backend.store.admin.accessor import AdminAccessor
-#from kts_backend.store.database.database import Database
+from kts_backend.store.database.database import Database
 from kts_backend.web.config import Config, setup_config
 #from kts_backend.web.logger import setup_logging
 #from kts_backend.web.mw import setup_middlewares
@@ -22,7 +18,7 @@ from kts_backend.web.config import Config, setup_config
 class Application(AiohttpApplication):
     config: Optional[Config] = None
     store: Optional[Store] = None
-    #database: Optional[Database] = None
+    database: Optional[Database] = None
     #admin_accessor: Optional[AdminAccessor] = None
 
 

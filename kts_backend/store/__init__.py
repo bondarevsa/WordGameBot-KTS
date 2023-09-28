@@ -2,7 +2,7 @@ import typing
 
 #from app.store.admin.accessor import AdminAccessor
 #from kts_backend.store.database.sqlalchemy_base import db
-#from kts_backend.store.database.database import Database
+from kts_backend.store.database.database import Database
 if typing.TYPE_CHECKING:
     from kts_backend.web.app import Application
     #from kts_backend.store.admin.accessor import AdminAccessor
@@ -19,14 +19,14 @@ class Store:
 
         #self.quizzes = QuizAccessor(app)
         #self.admins = AdminAccessor(app)
+        self.users = UserAccessor(app)
         self.vk_api = VkApiAccessor(app)
         self.bots_manager = BotManager(app)
         #self.user = UserAccessor(app)
 
 
 def setup_store(app: "Application"):
-    #app.database = Database(app)
-
-    #app.on_startup.append(app.database.connect)
-    #app.on_cleanup.append(app.database.disconnect)
+    app.database = Database(app)
+    app.on_startup.append(app.database.connect)
+    app.on_cleanup.append(app.database.disconnect)
     app.store = Store(app)

@@ -1,4 +1,6 @@
 from typing import Optional
+from dataclasses import dataclass
+import datetime
 from kts_backend.store.database.sqlalchemy_base import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import (
@@ -12,13 +14,28 @@ from sqlalchemy import (
     ARRAY
 )
 
+@dataclass
+class GameDC:
+    id: int
+    created_at: datetime.datetime
+    chat_id: int
+    status: bool
+    words: list[str]
+
+@dataclass
+class GameScoreDC:
+    id: int
+    player_id: int
+    game_id: int
+    points: int
+    is_playing: bool
+
 
 class GameModel(db):
     __tablename__ = "games"
     id = Column(BigInteger, primary_key=True)
     created_at = Column(DateTime)
     chat_id = Column(BigInteger)
-    last_name = Column(String)
     status = Column(Boolean)
     words = Column(ARRAY(String))
     gamescore = relationship('GameScoreModel', cascade='all,delete')

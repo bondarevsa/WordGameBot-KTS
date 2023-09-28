@@ -31,7 +31,6 @@ class VkApiAccessor(BaseAccessor):
         except Exception as e:
             self.logger.error("Exception", exc_info=e)
         self.poller = Poller(app.store)
-        #print('поллер стартанул')
         self.logger.info("start polling")
         await self.poller.start()
 
@@ -93,9 +92,6 @@ class VkApiAccessor(BaseAccessor):
                         Update(
                             type=update["type"],
                             object=UpdateObject(
-                                # id=update["object"]["id"],
-                                # user_id=update["object"]["user_id"],
-                                # body=update["object"]["body"],
                                 message=UpdateMessage(
                                     from_id=update["object"]["message"]["from_id"],
                                     text=update["object"]["message"]["text"],
@@ -115,9 +111,7 @@ class VkApiAccessor(BaseAccessor):
                 API_PATH,
                 "messages.send",
                 params={
-                    #"user_id": message.user_id,
                     "random_id": random.randint(1, 2**32),
-                    #"peer_id": "-" + str(self.app.config.bot.group_id),
                     "peer_id": message.peer_id,
                     "message": message.text,
                     "access_token": self.app.config.bot.token,
