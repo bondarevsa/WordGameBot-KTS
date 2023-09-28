@@ -16,5 +16,6 @@ class BotManager:
                 Message(
                     user_id=update.object.message.from_id,
                     text=update.object.message.text,
+                    peer_id=update.object.message.peer_id
                 )
             )

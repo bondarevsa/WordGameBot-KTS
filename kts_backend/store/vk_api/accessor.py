@@ -76,9 +76,10 @@ class VkApiAccessor(BaseAccessor):
                     "act": "a_check",
                     "key": self.key,
                     "ts": self.ts,
-                    "wait": 30,
+                    "wait": 10,
                 },
             )
+
         ) as resp:
             data = await resp.json()
             self.logger.info(data)
@@ -86,21 +87,25 @@ class VkApiAccessor(BaseAccessor):
             raw_updates = data.get("updates", [])
             updates = []
             for update in raw_updates:
-                updates.append(
-                    Update(
-                        type=update["type"],
-                        object=UpdateObject(
-                            # id=update["object"]["id"],
-                            # user_id=update["object"]["user_id"],
-                            # body=update["object"]["body"],
-                            message=UpdateMessage(
-                                from_id=update["object"]["message"]["from_id"],
-                                text=update["object"]["message"]["text"],
-                                id=update["object"]["message"]["from_id"]
-                            )
-                        ),
+                print(update)
+                try:
+                    updates.append(
+                        Update(
+                            type=update["type"],
+                            object=UpdateObject(
+                                # id=update["object"]["id"],
+                                # user_id=update["object"]["user_id"],
+                                # body=update["object"]["body"],
+                                message=UpdateMessage(
+                                    from_id=update["object"]["message"]["from_id"],
+                                    text=update["object"]["message"]["text"],
+                                    peer_id=update["object"]["message"]["peer_id"]
+                                )
+                            ),
+                        )
                     )
-                )
+                except:
+                    pass
             return updates
             #await self.app.store.bots_manager.handle_updates(updates)
 
@@ -110,9 +115,10 @@ class VkApiAccessor(BaseAccessor):
                 API_PATH,
                 "messages.send",
                 params={
-                    "user_id": message.user_id,
+                    #"user_id": message.user_id,
                     "random_id": random.randint(1, 2**32),
-                    "peer_id": "-" + str(self.app.config.bot.group_id),
+                    #"peer_id": "-" + str(self.app.config.bot.group_id),
+                    "peer_id": message.peer_id,
                     "message": message.text,
                     "access_token": self.app.config.bot.token,
                 },
