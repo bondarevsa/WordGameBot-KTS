@@ -1,3 +1,4 @@
+import asyncio
 import random
 import typing
 from typing import Optional
@@ -6,6 +7,7 @@ from aiohttp import TCPConnector
 from aiohttp.client import ClientSession
 
 from kts_backend.base.base_accessor import BaseAccessor
+from kts_backend.store.bot.manager import BotManager, Sender
 from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject, UpdateMessage
 from kts_backend.store.vk_api.poller import Poller
 
@@ -22,7 +24,13 @@ class VkApiAccessor(BaseAccessor):
         self.key: Optional[str] = None
         self.server: Optional[str] = None
         self.poller: Optional[Poller] = None
+        self.bot_manager: Optional[BotManager] = None
+        self.sender: Optional[Sender] = None
         self.ts: Optional[int] = None
+
+        self.updates_queue = None
+        self.messages_queue = None
+
 
     async def connect(self, app: "Application"):
         self.session = ClientSession(connector=TCPConnector(verify_ssl=False))
@@ -30,15 +38,26 @@ class VkApiAccessor(BaseAccessor):
             await self._get_long_poll_service()
         except Exception as e:
             self.logger.error("Exception", exc_info=e)
+        self.updates_queue = asyncio.Queue()
+        self.messages_queue = asyncio.Queue()
         self.poller = Poller(app.store)
+        self.bot_manager = BotManager(app)
+        self.sender = Sender(app)
         self.logger.info("start polling")
         await self.poller.start()
+        await self.bot_manager.start()
+        await self.sender.start()
 
     async def disconnect(self, app: "Application"):
         if self.session:
             await self.session.close()
         if self.poller:
             await self.poller.stop()
+        if self.bot_manager:
+            await self.bot_manager.stop()
+        if self.sender:
+            await self.sender.stop()
+
 
     @staticmethod
     def _build_query(host: str, method: str, params: dict) -> str:
@@ -105,18 +124,3 @@ class VkApiAccessor(BaseAccessor):
             return updates
             #await self.app.store.bots_manager.handle_updates(updates)
 
-    async def send_message(self, message: Message) -> None:
-        async with self.session.get(
-            self._build_query(
-                API_PATH,
-                "messages.send",
-                params={
-                    "random_id": random.randint(1, 2**32),
-                    "peer_id": message.peer_id,
-                    "message": message.text,
-                    "access_token": self.app.config.bot.token,
-                },
-            )
-        ) as resp:
-            data = await resp.json()
-            self.logger.info(data)

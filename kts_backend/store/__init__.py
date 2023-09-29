@@ -21,7 +21,7 @@ class Store:
         #self.admins = AdminAccessor(app)
         self.users = UserAccessor(app)
         self.vk_api = VkApiAccessor(app)
-        self.bots_manager = BotManager(app)
+        #self.bots_manager = BotManager(app)
         #self.user = UserAccessor(app)
 
 
