@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 # Базовые структуры, для выполнения задания их достаточно,
@@ -14,6 +15,7 @@ class Message:
 class UpdateMessage:
     from_id: int
     text: str
+    payload: Optional[str]
     #id: int
     peer_id: int
 

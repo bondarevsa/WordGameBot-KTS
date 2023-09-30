@@ -14,22 +14,16 @@ class GameAccessor(BaseAccessor):
             session.add(game)
             await session.flush()
 
-            user_ids = await self.app.store.users.get_users(self.app, chat_id)
-
-            tasks = []
-            for user_id in user_ids:
-                task = asyncio.create_task(self.app.store.users.get_user_by_id(self.app, user_id))
-                tasks.append(task)
-            vk_user_data = await asyncio.gather(*tasks)
-            users_list = [UserModel(vk_id=player.vk_id, name=player.first_name, last_name=player.last_name)
-                          for player in vk_user_data]
+            users = await self.app.store.users.get_users(self.app, chat_id)
+            users_list = [UserModel(vk_id=player['id'], name=player['first_name'], last_name=player['last_name'])
+                          for player in users]
             session.add_all(users_list)
-            await session.flush()
+            #await session.flush()
 
             for user in users_list:
                 gamescore = GameScoreModel(user.vk_id, game.id, 0, 1)
                 session.add(gamescore)
-                await session.flush()
+                #await session.flush()
 
 
     async def get_active_game_by_chat_id (self, chat_id):

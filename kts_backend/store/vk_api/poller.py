@@ -22,4 +22,4 @@ class Poller:
     async def poll(self):
         while self.is_running:
             updates = await self.store.vk_api.poll()
-            self.store.vk_api.updates_queue.put(updates)
+            await self.store.vk_api.updates_queue.put(updates)

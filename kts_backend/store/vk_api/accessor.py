@@ -94,7 +94,7 @@ class VkApiAccessor(BaseAccessor):
                     "act": "a_check",
                     "key": self.key,
                     "ts": self.ts,
-                    "wait": 10,
+                    "wait": 5,
                 },
             )
 
@@ -107,6 +107,12 @@ class VkApiAccessor(BaseAccessor):
             for update in raw_updates:
                 print(update)
                 try:
+
+                    try:
+                        payload = update["object"]["message"]["payload"]
+                    except:
+                        payload = None
+
                     updates.append(
                         Update(
                             type=update["type"],
@@ -114,7 +120,8 @@ class VkApiAccessor(BaseAccessor):
                                 message=UpdateMessage(
                                     from_id=update["object"]["message"]["from_id"],
                                     text=update["object"]["message"]["text"],
-                                    peer_id=update["object"]["message"]["peer_id"]
+                                    peer_id=update["object"]["message"]["peer_id"],
+                                    payload=payload
                                 )
                             ),
                         )
@@ -122,5 +129,23 @@ class VkApiAccessor(BaseAccessor):
                 except:
                     pass
             return updates
-            #await self.app.store.bots_manager.handle_updates(updates)
 
+    async def send_message(self) -> None:
+        while self.sender.is_running:
+            message = await self.messages_queue.get()
+            async with self.session.get(
+                    self._build_query(
+                        API_PATH,
+                        "messages.send",
+                        params={
+                            "random_id": random.randint(1, 2 ** 32),
+                            "peer_id": message.peer_id,
+                            "message": message.text,
+                            "keyboard": self.app.store.vk_api.bot_manager.keyboard,
+                            "access_token": self.app.config.bot.token,
+                        },
+                    )
+            ) as resp:
+                data = await resp.json()
+                print('data ', data)
+                self.logger.info(data)
