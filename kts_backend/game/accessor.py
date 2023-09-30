@@ -9,7 +9,7 @@ from kts_backend.users.models import UserModel
 
 class GameAccessor(BaseAccessor):
     async def create_game(self, chat_id):
-        async with self.app.database.session() as session:
+        async with self.app.database.session.begin() as session:
             game = GameModel(created_at=datetime.now(), chat_id=chat_id, status=0, words=[])
             session.add(game)
             await session.flush()
@@ -18,13 +18,11 @@ class GameAccessor(BaseAccessor):
             users_list = [UserModel(vk_id=player['id'], name=player['first_name'], last_name=player['last_name'])
                           for player in users]
             session.add_all(users_list)
-            #await session.flush()
+            await session.flush()
 
             for user in users_list:
-                gamescore = GameScoreModel(user.vk_id, game.id, 0, 1)
+                gamescore = GameScoreModel(player_id=user.id, game_id=game.id, points=0, is_playing=1)
                 session.add(gamescore)
-                #await session.flush()
-
 
     async def get_active_game_by_chat_id (self, chat_id):
         async with self.app.database.session() as session:

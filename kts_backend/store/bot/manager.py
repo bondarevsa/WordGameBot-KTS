@@ -83,6 +83,7 @@ class BotManager:
                     )
                     await self.app.store.game.create_game(update.object.message.peer_id)
 
+
                 else:
                     message = Message(
                             user_id=update.object.message.from_id,
@@ -90,18 +91,3 @@ class BotManager:
                             peer_id=update.object.message.peer_id
                             )
                 await self.app.store.vk_api.messages_queue.put(message)
-
-
-class Sender:
-    def __init__(self, app: "Application"):
-        self.app = app
-        self.is_running = False
-        self.sender_task: Optional[Task] = None
-
-    async def start(self):
-        self.is_running = True
-        self.sender_task = asyncio.create_task(self.app.store.vk_api.send_message())
-
-    async def stop(self):
-        self.is_running = False
-        await self.sender_task

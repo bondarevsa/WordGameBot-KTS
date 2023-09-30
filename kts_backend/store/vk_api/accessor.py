@@ -7,9 +7,10 @@ from aiohttp import TCPConnector
 from aiohttp.client import ClientSession
 
 from kts_backend.base.base_accessor import BaseAccessor
-from kts_backend.store.bot.manager import BotManager, Sender
+from kts_backend.store.bot.manager import BotManager
 from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject, UpdateMessage
 from kts_backend.store.vk_api.poller import Poller
+from kts_backend.store.vk_api.sender import Sender
 
 if typing.TYPE_CHECKING:
     from kts_backend.web.app import Application
@@ -147,5 +148,4 @@ class VkApiAccessor(BaseAccessor):
                     )
             ) as resp:
                 data = await resp.json()
-                print('data ', data)
                 self.logger.info(data)

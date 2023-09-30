@@ -21,7 +21,7 @@ class UserDC:
 class UserModel(db):
     __tablename__ = "users"
     id = Column(BigInteger, primary_key=True)
-    vk_id = Column(BigInteger, primary_key=True)
+    vk_id = Column(BigInteger)
     name = Column(String)
     last_name = Column(String)
 
