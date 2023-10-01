@@ -26,3 +26,4 @@ class UserModel(db):
     last_name = Column(String)
 
     gamescore = relationship('GameScoreModel', cascade='all,delete')
+    game = relationship('GameModel')

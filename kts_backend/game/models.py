@@ -36,7 +36,11 @@ class GameModel(db):
     id = Column(BigInteger, primary_key=True)
     created_at = Column(DateTime)
     chat_id = Column(BigInteger)
-    status = Column(Boolean)
+    status = Column(String)
+    is_active = Column(Boolean)
+    current_player = Column(BigInteger, ForeignKey('users.id'))
+    players_queue = Column(ARRAY(BigInteger))
+    players_turn_time = Column(DateTime)
     words = Column(ARRAY(String))
     gamescore = relationship('GameScoreModel', cascade='all,delete')
 

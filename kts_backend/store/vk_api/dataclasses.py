@@ -7,8 +7,9 @@ from typing import Optional
 @dataclass
 class Message:
     user_id: int
-    text: str
+    text: Optional[str]
     peer_id: int
+    keyboard: Optional[dict]
 
 
 @dataclass
@@ -16,7 +17,6 @@ class UpdateMessage:
     from_id: int
     text: str
     payload: Optional[str]
-    #id: int
     peer_id: int
 
 

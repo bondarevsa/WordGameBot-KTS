@@ -19,3 +19,4 @@ class Sender:
     async def stop(self):
         self.is_running = False
         await self.sender_task
+

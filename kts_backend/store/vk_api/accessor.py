@@ -6,6 +6,7 @@ from typing import Optional
 from aiohttp import TCPConnector
 from aiohttp.client import ClientSession
 
+import constants
 from kts_backend.base.base_accessor import BaseAccessor
 from kts_backend.store.bot.manager import BotManager
 from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject, UpdateMessage
@@ -142,7 +143,7 @@ class VkApiAccessor(BaseAccessor):
                             "random_id": random.randint(1, 2 ** 32),
                             "peer_id": message.peer_id,
                             "message": message.text,
-                            "keyboard": self.app.store.vk_api.bot_manager.keyboard,
+                            "keyboard": message.keyboard,
                             "access_token": self.app.config.bot.token,
                         },
                     )
