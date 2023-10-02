@@ -1,10 +1,10 @@
 from typing import Optional, TYPE_CHECKING
 
-from sqlalchemy import select
+from sqlalchemy import update, and_, select, func, case, literal, text
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from kts_backend.game.models import GameModel
+from kts_backend.game.models import GameScoreModel, GameModel
 from kts_backend.store.database.sqlalchemy_base import db
 if TYPE_CHECKING:
     from kts_backend.web.app import Application
@@ -23,10 +23,10 @@ class Database:
         self._db = db
         self._engine = create_async_engine(DATABASE_URL, echo=True, future=True)
         self.session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)
-        # async with self.session() as session:
-        #     query = select(GameModel).where(GameModel.chat_id == 2000000003).order_by(GameModel.status.desc()).limit(1)
+        # async with self.app.database.session() as session:
+        #     query = select(GameModel.players_queue).where(GameModel.id == 151)
         #     res = await session.execute(query)
-        #     print('ya res :', res)
+        #     print(res.scalar()[0])
 
     async def disconnect(self, *_: list, **__: dict) -> None:
         if self.session is not None:

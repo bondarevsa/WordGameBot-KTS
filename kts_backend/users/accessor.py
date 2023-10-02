@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from kts_backend.base.base_accessor import BaseAccessor
 from kts_backend.game.models import GameScoreModel
 from kts_backend.users.models import UserDC, UserModel
@@ -47,5 +49,18 @@ class UserAccessor(BaseAccessor):
             session.add(user)
             await session.flush()
 
-            gamescore = GameScoreModel(player_id=user.id, game_id=game_id, points=0, is_playing=1)
+            gamescore = GameScoreModel(player_id=user.id, game_id=game_id, points=0,
+                                       is_playing=1, vote_status='still voting')
             session.add(gamescore)
+
+    async def get_user_by_vk_id(self, vk_id):
+        async with self.app.database.session() as session:
+            query = select(UserModel).where(UserModel.vk_id == vk_id)
+            res = await session.execute(query)
+            return list(res)[0][0]  # так вернёт в формате UserModel
+
+    async def get_user_by_id_from_db(self, user_id):
+        async with self.app.database.session() as session:
+            query = select(UserModel).where(UserModel.id == user_id)
+            res = await session.execute(query)
+            return list(res)[0][0]  # так вернёт в формате UserModel

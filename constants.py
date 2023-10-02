@@ -39,3 +39,27 @@ collect_players_keyboard = json.dumps({
                 ]
             ]
         })
+
+voting_keyboard = json.dumps({
+            "one_time": False,
+            "buttons": [
+                [
+                    {
+                        "action": {
+                            "type": "text",
+                            "label": "Да",
+                            "payload": json.dumps({"button": "4"})
+                        },
+                        "color": "positive"
+                    },
+                    {
+                        "action": {
+                            "type": "text",
+                            "label": "Нет",
+                            "payload": json.dumps({"button": "5"})
+                        },
+                        "color": "negative"
+                    }
+                ]
+            ]
+        })

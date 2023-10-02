@@ -29,6 +29,7 @@ class GameScoreDC:
     game_id: int
     points: int
     is_playing: bool
+    vote_status: bool
 
 
 class GameModel(db):
@@ -44,6 +45,7 @@ class GameModel(db):
     words = Column(ARRAY(String))
     gamescore = relationship('GameScoreModel', cascade='all,delete')
 
+
 class GameScoreModel(db):
     __tablename__ = "gamescores"
     id = Column(BigInteger, primary_key=True)
@@ -51,3 +53,4 @@ class GameScoreModel(db):
     game_id = Column(BigInteger, ForeignKey('games.id', ondelete='CASCADE'))
     points = Column(Integer)
     is_playing = Column(Boolean)
+    vote_status = Column(String)
