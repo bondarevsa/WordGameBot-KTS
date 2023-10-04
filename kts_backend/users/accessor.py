@@ -42,13 +42,15 @@ class UserAccessor(BaseAccessor):
             self.logger.error(f"Ошибка при получении информации о пользователе: {str(e)}")
             return None
 
-    async def create_user_and_gamescore(self, user_vk_id, game_id):
+    async def create_user(self, user_vk_id):
         async with self.app.database.session.begin() as session:
             user_by_id = await self.get_user_by_id(self.app, user_vk_id)
             user = UserModel(vk_id=user_by_id['id'], name=user_by_id['first_name'], last_name=user_by_id['last_name'])
             session.add(user)
-            await session.flush()
 
+    async def create_gamescore(self, user_vk_id, game_id):
+        async with self.app.database.session.begin() as session:
+            user = await self.get_user_by_vk_id(user_vk_id)
             gamescore = GameScoreModel(player_id=user.id, game_id=game_id, points=0,
                                        is_playing=1, vote_status='still voting')
             session.add(gamescore)

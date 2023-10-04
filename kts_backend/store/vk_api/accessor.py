@@ -33,7 +33,6 @@ class VkApiAccessor(BaseAccessor):
         self.updates_queue = None
         self.messages_queue = None
 
-
     async def connect(self, app: "Application"):
         self.session = ClientSession(connector=TCPConnector(verify_ssl=False))
         try:
@@ -49,6 +48,7 @@ class VkApiAccessor(BaseAccessor):
         await self.poller.start()
         await self.bot_manager.start()
         await self.sender.start()
+        await self.app.store.game_timer.start()
 
     async def disconnect(self, app: "Application"):
         if self.session:
@@ -132,21 +132,21 @@ class VkApiAccessor(BaseAccessor):
                     pass
             return updates
 
-    async def send_message(self) -> None:
-        while self.sender.is_running:
-            message = await self.messages_queue.get()
-            async with self.session.get(
-                    self._build_query(
-                        API_PATH,
-                        "messages.send",
-                        params={
-                            "random_id": random.randint(1, 2 ** 32),
-                            "peer_id": message.peer_id,
-                            "message": message.text,
-                            "keyboard": message.keyboard,
-                            "access_token": self.app.config.bot.token,
-                        },
-                    )
-            ) as resp:
-                data = await resp.json()
-                self.logger.info(data)
+    async def send_message(self, message) -> None:
+        # while self.sender.is_running:
+        #     message = await self.messages_queue.get()
+        async with self.session.get(
+                self._build_query(
+                    API_PATH,
+                    "messages.send",
+                    params={
+                        "random_id": random.randint(1, 2 ** 32),
+                        "peer_id": message.peer_id,
+                        "message": message.text,
+                        "keyboard": message.keyboard,
+                        "access_token": self.app.config.bot.token,
+                    },
+                )
+        ) as resp:
+            data = await resp.json()
+            self.logger.info(data)
