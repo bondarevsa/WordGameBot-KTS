@@ -17,9 +17,11 @@ class GameAccessor(BaseAccessor):
 
     async def get_active_game_by_chat_id(self, chat_id):
         async with self.app.database.session() as session:
-            query = select(GameModel).where(GameModel.chat_id == chat_id).order_by(GameModel.is_active.desc()).limit(1)
+            query = select(GameModel).where(
+                and_(GameModel.chat_id == chat_id, GameModel.is_active == True)
+            )
             res = await session.execute(query)
-            return res
+            return res.scalar_one_or_none()
 
     async def get_all_active_waiting_games(self):
         async with self.app.database.session() as session:

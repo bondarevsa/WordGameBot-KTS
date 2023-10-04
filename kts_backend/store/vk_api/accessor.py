@@ -6,10 +6,9 @@ from typing import Optional
 from aiohttp import TCPConnector
 from aiohttp.client import ClientSession
 
-import constants
 from kts_backend.base.base_accessor import BaseAccessor
 from kts_backend.store.bot.manager import BotManager
-from kts_backend.store.vk_api.dataclasses import Message, Update, UpdateObject, UpdateMessage
+from kts_backend.store.vk_api.dataclasses import Update, UpdateObject, UpdateMessage
 from kts_backend.store.vk_api.poller import Poller
 from kts_backend.store.vk_api.sender import Sender
 

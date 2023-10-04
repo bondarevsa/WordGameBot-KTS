@@ -4,8 +4,8 @@ from asyncio import Task
 from datetime import timedelta, datetime
 from typing import Optional
 
-
-import constants
+from kts_backend.store.bot import constants
+from kts_backend.store.bot.manager import GameStatus
 from kts_backend.store.vk_api.dataclasses import Message
 
 from kts_backend.web.app import Application
@@ -32,7 +32,7 @@ class GameTimer:
             games = await self.app.store.game.get_all_active_waiting_games()
             for game in games:
                 game = game[0]
-                if game.status == 'waiting for players' and game.created_at + timedelta(seconds=10) <= datetime.now() and games != []:
+                if game.status == GameStatus.WAITING_PLAYERS.value and game.created_at + timedelta(seconds=10) <= datetime.now() and games != []:
                     # Если меньше двух игроков, игра не начинается
                     if len(game.players_queue) < 2:
                         message = Message(
@@ -47,7 +47,6 @@ class GameTimer:
 
                     await self.app.store.game.update_game_status_to_players_turn(game.id)
                     await self.app.store.game.add_players_turn_time(game.id)
-                    # await self.app.store.player_timer.start(game.chat_id)
                     first_player_id = await self.app.store.game.get_first_player_id(game.id)
                     first_player = await self.app.store.users.get_user_by_id_from_db(first_player_id)
                     first_word = random.choice(constants.init_words)
@@ -64,7 +63,7 @@ class GameTimer:
             games = await self.app.store.game.get_all_active_players_turn_games()
             for game in games:
                 game = game[0]
-                if game.status == 'players turn' and game.players_turn_time + timedelta(seconds=20) <= datetime.now() and games != []:
+                if game.status == GameStatus.PLAYER_TURN.value and game.players_turn_time + timedelta(seconds=20) <= datetime.now() and games != []:
                     user = await self.app.store.users.get_user_by_id_from_db(game.current_player)
                     await self.app.store.game.change_vote_status_on_voting(user.vk_id, game.id)
                     await self.app.store.game.change_is_playing(user.id, game.id)
