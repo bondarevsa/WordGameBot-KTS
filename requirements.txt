@@ -18,3 +18,6 @@ certifi==2023.7.22
 requests==2.31.0
 urllib3==2.0.5
 vk_api==11.9.9
+cffi==1.16.0
+cryptography==37.0.4
+pycparser==2.21

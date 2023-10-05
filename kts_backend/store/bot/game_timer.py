@@ -32,7 +32,7 @@ class GameTimer:
             games = await self.app.store.game.get_all_active_waiting_games()
             for game in games:
                 game = game[0]
-                if game.status == GameStatus.WAITING_PLAYERS.value and game.created_at + timedelta(seconds=10) <= datetime.now() and games != []:
+                if game.status == GameStatus.WAITING_PLAYERS.value and game.created_at + timedelta(seconds=20) <= datetime.now() and games != []:
                     # Если меньше двух игроков, игра не начинается
                     if len(game.players_queue) < 2:
                         message = Message(
@@ -63,7 +63,7 @@ class GameTimer:
             games = await self.app.store.game.get_all_active_players_turn_games()
             for game in games:
                 game = game[0]
-                if game.status == GameStatus.PLAYER_TURN.value and game.players_turn_time + timedelta(seconds=20) <= datetime.now() and games != []:
+                if game.status == GameStatus.PLAYER_TURN.value and game.players_turn_time + timedelta(seconds=30) <= datetime.now() and games != []:
                     user = await self.app.store.users.get_user_by_id_from_db(game.current_player)
                     await self.app.store.game.change_vote_status_on_voting(user.vk_id, game.id)
                     await self.app.store.game.change_is_playing(user.id, game.id)

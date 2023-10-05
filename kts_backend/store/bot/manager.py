@@ -184,6 +184,48 @@ class BotManager:
                     )
                     await self.app.store.vk_api.messages_queue.put(message)
 
+    async def stop_game(self, update, game):
+        gamescores = await self.app.store.game.get_all_gamescores(game)
+        tasks = []
+        message_text = 'Игра остановлена. Баллы игроков: '
+        for gamescore in gamescores:
+            task = self.app.store.users.get_user_by_id_from_db(gamescore[0].player_id)
+            tasks.append(task)
+        users = await asyncio.gather(*tasks)
+        for i in range(len(users)):
+            message_text += f'{users[i].name} {users[i].last_name} - {gamescores[i][0].points} '
+        message = Message(
+            user_id=update.object.message.from_id,
+            text=message_text,
+            peer_id=update.object.message.peer_id,
+            keyboard=constants.start_keyboard
+        )
+        await self.app.store.vk_api.messages_queue.put(message)
+        await self.app.store.game.end_game(game.id)
+
+    async def session_information(self, update, game):
+        tasks = []
+        message_text = 'Информация о текущей игре: '
+        message_text += f'Использованные слова - {game.words}. '
+        message_text += f'Статус игры - {game.status}. '
+        for player_id in game.players_queue:
+            task = self.app.store.users.get_user_by_id_from_db(player_id)
+            tasks.append(task)
+        users = await asyncio.gather(*tasks)
+        message_text += f'Сейчас ходит/ходил - {users[0].name} {users[0].last_name}. '
+        message_text += f'Очерёдность игроков: '
+        for user in users:
+            message_text += f'{user.name} {user.last_name} '
+        message = Message(
+            user_id=update.object.message.from_id,
+            text=message_text,
+            peer_id=update.object.message.peer_id,
+            keyboard=constants.voting_keyboard
+        )
+        await self.app.store.vk_api.messages_queue.put(message)
+
+
+
     async def handle_updates(self):
         while self.is_running:
             updates = await self.app.store.vk_api.updates_queue.get()
@@ -211,6 +253,11 @@ class BotManager:
 
                 # если есть активная игра
                 else:
+                    if update.object.message.text == 'стоп игра':
+                        await self.stop_game(update, game)
+                        break
+                    if update.object.message.text == 'инфа по игре':
+                        await self.session_information(update, game)
                     # Если нажали на кнопку "Буду играть!" добавляем юзера в базу
                     # Перед этим проверяем, что его нет в базе
                     if game.status == GameStatus.WAITING_PLAYERS.value and update.object.message.payload == '{"button":"3"}':

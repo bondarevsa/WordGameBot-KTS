@@ -5,24 +5,22 @@ import typing
 from kts_backend.store.database.database import Database
 if typing.TYPE_CHECKING:
     from kts_backend.web.app import Application
-    #from kts_backend.store.admin.accessor import AdminAccessor
+    from kts_backend.store.admin.accessor import AdminAccessor
 
 
 class Store:
     def __init__(self, app: "Application"):
         from kts_backend.users.accessor import UserAccessor
         from kts_backend.game.accessor import GameAccessor
-        #from kts_backend.store.admin.accessor import AdminAccessor
+        from kts_backend.store.admin.accessor import AdminAccessor
         from kts_backend.store.vk_api.accessor import VkApiAccessor
         from kts_backend.store.bot.game_timer import GameTimer
-        #from kts_backend.store.bot.game_timer import PlayerTimer
 
-        #self.admins = AdminAccessor(app)
+        self.admins = AdminAccessor(app)
         self.users = UserAccessor(app)
         self.vk_api = VkApiAccessor(app)
         self.game = GameAccessor(app)
         self.game_timer = GameTimer(app)
-        #self.player_timer = PlayerTimer(app)
 
 
 def setup_store(app: "Application"):

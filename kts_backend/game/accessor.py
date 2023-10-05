@@ -216,7 +216,8 @@ class GameAccessor(BaseAccessor):
             await session.execute(query)
             await session.commit()
 
-
-
-
-
+    async def get_all_gamescores(self, game):
+        async with self.app.database.session() as session:
+            query = select(GameScoreModel).where(GameScoreModel.game_id == game.id)
+            res = await session.execute(query)
+            return res.fetchall()
