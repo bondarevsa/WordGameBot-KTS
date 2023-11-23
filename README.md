@@ -6,7 +6,8 @@
 ### Компоненты:
 - `VK Poller` - слушает события из VK и передаёт их `Bot manager`
 - `Bot manager` — обрабатывыет передынные события
-- `Admin API` — API для управления игрой![Архитектура](readme_images/arch.png)
+- `Admin API` — API для управления игрой    
+  ![Архитектура](readme_images/arch.png)
 
 ### Схема БД
 ![БД](readme_images/bd.png)
