@@ -32,7 +32,7 @@ class GameTimer:
             games = await self.app.store.game.get_all_active_waiting_games()
             for game in games:
                 game = game[0]
-                if game.status == GameStatus.WAITING_PLAYERS.value and game.created_at + timedelta(seconds=20) <= datetime.now() and games != []:
+                if game.status == GameStatus.WAITING_PLAYERS.value and game.created_at + timedelta(seconds=5) <= datetime.now() and games != []:
                     # Если меньше двух игроков, игра не начинается
                     if len(game.players_queue) < 2:
                         message = Message(
